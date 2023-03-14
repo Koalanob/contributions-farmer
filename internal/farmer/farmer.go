@@ -62,13 +62,12 @@ func (a *activityFarmer) startWorker(id int, ctx context.Context, wg *sync.WaitG
 		a.counter.Add(1)
 
 		if currentDay == a.end {
-			fmt.Printf("\n\n\n")
 			currentDay = a.start
 		}
 
-		a.m.Lock()
 		log.Printf("Worker: %d -> successfully commited %v %v %v", id, currentDay.Year(), currentDay.Month(), currentDay.Day())
 
+		a.m.Lock()
 		if err := a.vcs.Commit(ctx, a.repo, fmt.Sprintf("feat: my cool feature. %d", j), currentDay); err != nil {
 			log.Fatalln(err)
 		}
