@@ -19,7 +19,7 @@ First of all you need to generate two github tokens.
 Create your own repository and clone this app (to be able to deploy it on the Railway)
 
 ```bash
-git clone https://github.com/robotiksuperb/contributions-farmerer.git
+git clone https://github.com/robotiksuperb/contributions-farmer.git
 ```
 
 Configure `app.env` file. You can check the example in the `app.env.example`. </br>
@@ -33,6 +33,8 @@ USER_EMAIL=
 ```
 
 It's not neccessarry to configure other parameters, but it's on your own.
+
+You can easily change the dates for the farmer in the `main.go` file.
 
 ## How-to-run
 
