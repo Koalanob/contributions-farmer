@@ -208,10 +208,6 @@ func (g *githubProvider) Clone(ctx context.Context, repo string) error {
 }
 
 func (g *githubProvider) Commit(ctx context.Context, message string, date time.Time) error {
-	if _, err := g.worktree.Add(g.filename); err != nil {
-		return fmt.Errorf("%w: %w", vcs.ErrAddFailure, err)
-	}
-
 	if _, err := g.worktree.Commit(message, &git.CommitOptions{
 		Author: &object.Signature{Name: g.username, Email: g.email, When: date},
 	}); err != nil {
