@@ -2,12 +2,9 @@ package github
 
 import (
 	"github.com/robotiksuperb/contributions-farmer/internal/common"
-	"github.com/robotiksuperb/contributions-farmer/internal/fm"
 )
 
 type Config struct {
-	fm.FileManager
-
 	AccessToken  string
 	ClassicToken string
 
@@ -26,12 +23,6 @@ type OptionFn = common.Options[Config]
 func WithAccessToken(token string) OptionFn {
 	return func(c *Config) {
 		c.AccessToken = token
-	}
-}
-
-func WithCommonOptions(fm fm.FileManager) OptionFn {
-	return func(o *Config) {
-		o.FileManager = fm
 	}
 }
 

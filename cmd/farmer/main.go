@@ -8,8 +8,6 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/robotiksuperb/contributions-farmer/internal/fm/local"
-
 	"github.com/robotiksuperb/contributions-farmer/internal/config"
 	"github.com/robotiksuperb/contributions-farmer/internal/farmer"
 	"github.com/robotiksuperb/contributions-farmer/internal/vcs/github"
@@ -26,12 +24,7 @@ func initializeGithubFarmer(ctx context.Context) (farmer.Farmer, error) {
 		return nil, err
 	}
 
-	fm := local.NewLocalFileManager(
-		local.WithPath(cfg.ReposPath, cfg.TargetRepo),
-	)
-
 	vcs := github.New(
-		github.WithCommonOptions(fm),
 		github.WithAccessToken(cfg.AccessToken),
 		github.WithClassicCredentials(cfg.ClassicToken, cfg.UserName, cfg.UserEmail),
 		github.WithPath(cfg.ReposPath, cfg.TargetRepo, cfg.FileName, cfg.RepositoryPrefix),

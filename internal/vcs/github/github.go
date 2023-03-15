@@ -12,7 +12,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 
-	"github.com/robotiksuperb/contributions-farmer/internal/fm"
 	"github.com/robotiksuperb/contributions-farmer/internal/vcs"
 
 	goGithub "github.com/google/go-github/github"
@@ -25,7 +24,6 @@ type githubProvider struct {
 
 	worktree   *git.Worktree
 	repository *git.Repository
-	fm         fm.FileManager
 
 	prefix string
 
@@ -49,8 +47,6 @@ func New(opts ...OptionFn) vcs.VCSProvider {
 
 	c := goGithub.NewClient(oauth2.NewClient(ctx, ts))
 
-	flm := cfg.FileManager
-
 	auth := &http.BasicAuth{
 		Username: cfg.Username,
 		Password: cfg.ClassicToken,
@@ -59,7 +55,6 @@ func New(opts ...OptionFn) vcs.VCSProvider {
 	return &githubProvider{
 		client:      c,
 		auth:        auth,
-		fm:          flm,
 		prefix:      cfg.FarmerPrefix,
 		reposFolder: cfg.ReposFolder,
 		repoFolder:  cfg.RepoFolder,
@@ -213,10 +208,6 @@ func (g *githubProvider) Clone(ctx context.Context, repo string) error {
 }
 
 func (g *githubProvider) Commit(ctx context.Context, message string, date time.Time) error {
-	if err := g.fm.CreateAndEditFile(ctx, g.filename); err != nil {
-		log.Fatalln(err)
-	}
-
 	if _, err := g.worktree.Add(g.filename); err != nil {
 		return fmt.Errorf("%w: %w", vcs.ErrAddFailure, err)
 	}
