@@ -225,7 +225,6 @@ func (g *githubProvider) Commit(ctx context.Context, message string, date time.T
 		Author: &object.Signature{Name: g.username, Email: g.email, When: date},
 	}); err != nil {
 		return fmt.Errorf("%w: %w", vcs.ErrCommitFailure, err)
-
 	}
 
 	return nil

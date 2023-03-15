@@ -16,10 +16,11 @@ type Farmer interface {
 }
 
 type activityFarmer struct {
-	m       *sync.Mutex
-	counter atomic.Uint64
-
+	m   *sync.Mutex
 	vcs vcs.VCSProvider
+
+	lapCounter     atomic.Uint64
+	commitsCounter atomic.Uint64
 
 	repo        string
 	concurrency int
@@ -51,28 +52,23 @@ func New(opts ...OptionFn) (Farmer, error) {
 	}, nil
 }
 
-// TODO: fix concurrency (git)
 func (a *activityFarmer) startWorker(id int, ctx context.Context, wg *sync.WaitGroup, ch chan int) {
 	defer wg.Done()
 
 	currentDay := a.start
 
 	for j := range ch {
-		currentDay = currentDay.AddDate(0, 0, -1)
-		a.counter.Add(1)
+		a.commitsCounter.Add(1)
 
+		currentDay = currentDay.AddDate(0, 0, -1)
 		if currentDay == a.end {
 			currentDay = a.start
+			a.lapCounter.Add(1)
+			log.Printf("successfully commited from %s to %s | %d round is complete", a.start, a.end, a.lapCounter.Load())
 		}
-
-		log.Printf("Worker: %d -> successfully commited %v %v %v", id, currentDay.Year(), currentDay.Month(), currentDay.Day())
 
 		a.m.Lock()
 		if err := a.vcs.Commit(ctx, fmt.Sprintf("feat: my cool feature. %d", j), currentDay); err != nil {
-			log.Fatalln(err)
-		}
-
-		if err := a.vcs.Push(ctx, a.repo); err != nil {
 			log.Fatalln(err)
 		}
 		a.m.Unlock()
@@ -85,8 +81,12 @@ func (a *activityFarmer) seedJobs(ctx context.Context, ch chan int) {
 	for {
 		select {
 		case <-ctx.Done():
+			fmt.Printf("\n\n\n You have reached %d commits. I'll try to push it now ~~~\n\n\n", a.commitsCounter.Load())
+			if err := a.vcs.Push(ctx, a.repo); err != nil {
+				log.Fatalln(err)
+			}
+			fmt.Println("Successfully pushed all commits")
 			fmt.Printf("seeder is being closed... \n")
-			fmt.Printf("Total commits: %d\n", a.counter.Load())
 			return
 		default:
 		}
@@ -109,7 +109,7 @@ func (a *activityFarmer) Run(ctx context.Context) error {
 		log.Fatalln(err)
 	}
 
-	for i := 0; i <= a.concurrency; i += 1 {
+	for i := 1; i <= a.concurrency; i++ {
 		wg.Add(1)
 		go a.startWorker(i, ctx, wg, jobs)
 	}
