@@ -64,7 +64,8 @@ func (a *activityFarmer) startWorker(id int, ctx context.Context, wg *sync.WaitG
 		if currentDay == a.end {
 			currentDay = a.start
 			a.lapCounter.Add(1)
-			log.Printf("successfully commited from %s to %s | %d round is complete", a.start, a.end, a.lapCounter.Load())
+			log.Printf("successfully commited from %s to %s | %d round is complete | commits count: %d",
+				a.start, a.end, a.lapCounter.Load(), a.commitsCounter.Load())
 		}
 
 		a.m.Lock()
@@ -85,7 +86,7 @@ func (a *activityFarmer) seedJobs(ctx context.Context, ch chan int) {
 			if err := a.vcs.Push(ctx, a.repo); err != nil {
 				log.Fatalln(err)
 			}
-			fmt.Println("Successfully pushed all commits")
+			fmt.Printf("Successfully pushed all commits\n")
 			fmt.Printf("seeder is being closed... \n")
 			return
 		default:
