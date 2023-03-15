@@ -1,10 +1,11 @@
 build:
-	@go build main.go
+	@go build ./cmd/farmer/main.go
 
-run:
+run-w:
+	@./main.exe
+
+run-l:
 	@./main
 
-clean:
-	@go clean .
-
-all: build run clean
+all-w: build run-w
+all-l: build run-l
