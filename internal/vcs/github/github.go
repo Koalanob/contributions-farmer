@@ -23,7 +23,9 @@ type githubProvider struct {
 	client *goGithub.Client
 	auth   *http.BasicAuth
 
-	fm fm.FileManager
+	worktree   *git.Worktree
+	repository *git.Repository
+	fm         fm.FileManager
 
 	prefix string
 
@@ -171,17 +173,6 @@ func (g *githubProvider) DeleteAllRepos(ctx context.Context, prefix string) erro
 	return nil
 }
 
-func (g *githubProvider) getRepo(ctx context.Context, repo string) (*git.Repository, error) {
-	path := fmt.Sprintf("./%s/%s", g.reposFolder, repo)
-
-	r, err := git.PlainOpen(path)
-	if err != nil {
-		return nil, err
-	}
-
-	return r, nil
-}
-
 func (g *githubProvider) Clone(ctx context.Context, repo string) error {
 	log.Printf("trying to clone %s repository...", repo)
 
@@ -201,32 +192,36 @@ func (g *githubProvider) Clone(ctx context.Context, repo string) error {
 		}
 	}
 
+	// open repository
+	repository, err := git.PlainOpen(path)
+	if err != nil {
+		return err
+	}
+
+	// create worktree
+	worktree, err := repository.Worktree()
+	if err != nil {
+		return err
+	}
+
+	g.repository = repository
+	g.worktree = worktree
+
 	log.Printf("successfully cloned %s repository", repo)
 
 	return nil
 }
 
-func (g *githubProvider) Commit(ctx context.Context, repo, message string, date time.Time) error {
-	r, err := g.getRepo(ctx, repo)
-	if err != nil {
-		return err
-	}
-
-	w, err := r.Worktree()
-	if err != nil {
-		return err
-	}
-
+func (g *githubProvider) Commit(ctx context.Context, message string, date time.Time) error {
 	if err := g.fm.CreateAndEditFile(ctx, g.filename); err != nil {
 		log.Fatalln(err)
 	}
 
-	if _, err = w.Add(g.filename); err != nil {
+	if _, err := g.worktree.Add(g.filename); err != nil {
 		return fmt.Errorf("%w: %w", vcs.ErrAddFailure, err)
-
 	}
 
-	if _, err := w.Commit(message, &git.CommitOptions{
+	if _, err := g.worktree.Commit(message, &git.CommitOptions{
 		Author: &object.Signature{Name: g.username, Email: g.email, When: date},
 	}); err != nil {
 		return fmt.Errorf("%w: %w", vcs.ErrCommitFailure, err)
@@ -237,12 +232,7 @@ func (g *githubProvider) Commit(ctx context.Context, repo, message string, date 
 }
 
 func (g *githubProvider) Push(ctx context.Context, repo string) error {
-	r, err := g.getRepo(ctx, repo)
-	if err != nil {
-		return err
-	}
-
-	if err := r.Push(&git.PushOptions{
+	if err := g.repository.Push(&git.PushOptions{
 		RemoteName: "origin",
 		Auth:       g.auth,
 		Force:      true,

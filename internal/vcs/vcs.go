@@ -25,6 +25,6 @@ type VCSProvider interface {
 	DeleteAllRepos(ctx context.Context, prefix string) error
 
 	Clone(ctx context.Context, repo string) error
-	Commit(ctx context.Context, repo string, message string, date time.Time) error
+	Commit(ctx context.Context, message string, date time.Time) error
 	Push(ctx context.Context, repo string) error
 }
