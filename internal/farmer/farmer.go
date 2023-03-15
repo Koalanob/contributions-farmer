@@ -72,6 +72,14 @@ func (a *activityFarmer) startWorker(id int, ctx context.Context, wg *sync.WaitG
 		if err := a.vcs.Commit(ctx, fmt.Sprintf("feat: my cool feature. %d", j), currentDay); err != nil {
 			log.Fatalln(err)
 		}
+
+		if a.commitsCounter.Load()%1000 == 0 && a.commitsCounter.Load() != 0 {
+			fmt.Printf("\n\n\n You have reached %d commits. I'll try to push it now ~~~\n\n\n", a.commitsCounter.Load())
+			if err := a.vcs.Push(ctx, a.repo); err != nil {
+				log.Fatalln(err)
+			}
+			fmt.Printf("Successfully pushed")
+		}
 		a.m.Unlock()
 
 	}
@@ -82,11 +90,6 @@ func (a *activityFarmer) seedJobs(ctx context.Context, ch chan int) {
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Printf("\n\n\n You have reached %d commits. I'll try to push it now ~~~\n\n\n", a.commitsCounter.Load())
-			if err := a.vcs.Push(ctx, a.repo); err != nil {
-				log.Fatalln(err)
-			}
-			fmt.Printf("Successfully pushed all commits\n")
 			fmt.Printf("seeder is being closed... \n")
 			return
 		default:
