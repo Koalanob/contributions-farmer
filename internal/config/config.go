@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strings"
 )
 
 const (
@@ -61,7 +62,12 @@ func New(path string) (*Config, error) {
 	config.FileName = viperConfig.FileName
 	config.ReposPath = viperConfig.ReposPath
 	config.RepositoryPrefix = viperConfig.RepositoryPrefix
-	config.TargetRepo = config.RepositoryPrefix + viperConfig.TargetRepo
+
+	if strings.Contains(viperConfig.TargetRepo, "farmer_") {
+		config.TargetRepo = viperConfig.TargetRepo
+	} else {
+		config.TargetRepo = config.RepositoryPrefix + viperConfig.TargetRepo
+	}
 
 	return config, nil
 }
