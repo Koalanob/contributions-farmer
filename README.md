@@ -47,3 +47,5 @@ make all-w
 ```bash
 make all-l
 ```
+
+**This script will push all commits when you press CTRL+C in the terminal. If you forget to do that and close the tab, just clone the repository that farmer created and run git push manually**
