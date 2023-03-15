@@ -78,7 +78,7 @@ func (a *activityFarmer) startWorker(id int, ctx context.Context, wg *sync.WaitG
 			if err := a.vcs.Push(ctx, a.repo); err != nil {
 				log.Fatalln(err)
 			}
-			fmt.Printf("Successfully pushed")
+			fmt.Printf("Successfully pushed\n")
 		}
 		a.m.Unlock()
 
