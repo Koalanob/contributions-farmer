@@ -61,7 +61,7 @@ func New(path string) (*Config, error) {
 	config.FileName = viperConfig.FileName
 	config.ReposPath = viperConfig.ReposPath
 	config.RepositoryPrefix = viperConfig.RepositoryPrefix
-	config.TargetRepo = viperConfig.TargetRepo
+	config.TargetRepo = config.RepositoryPrefix + viperConfig.TargetRepo
 
 	return config, nil
 }
