@@ -20,7 +20,6 @@ type activityFarmer struct {
 	m   *sync.Mutex
 	vcs vcs.VCSProvider
 
-	lapCounter     atomic.Uint64
 	commitsCounter atomic.Uint64
 
 	repo        string
@@ -64,22 +63,34 @@ func (a *activityFarmer) startWorker(id int, ctx context.Context, wg *sync.WaitG
 		currentDay = currentDay.AddDate(0, 0, -1)
 		if currentDay == a.end {
 			currentDay = a.start
-			a.lapCounter.Add(1)
-			log.Printf("successfully commited from %s to %s | %d round is complete | commits count: %d",
-				a.start, a.end, a.lapCounter.Load(), a.commitsCounter.Load())
+			log.Printf("successfully commited from %s to %s | commits count: %d",
+				a.start, a.end, a.commitsCounter.Load())
 		}
 
 		a.m.Lock()
+
 		if err := a.vcs.Commit(ctx, fmt.Sprintf("feat: my cool feature. %d", j), currentDay); err != nil {
 			log.Fatalln(err)
 		}
 
 		if a.commitsCounter.Load()%1000 == 0 && a.commitsCounter.Load() != 0 {
-			fmt.Printf("\n\n\n You have reached %d commits. Trying to push...\n\n\n", a.commitsCounter.Load())
+			fmt.Printf("\n\n\nYou have reached %d commits. Trying to push...\n", a.commitsCounter.Load())
 			if err := a.vcs.Push(ctx, a.repo); err != nil {
 				log.Fatalln(err)
 			}
 		}
+
+		if a.commitsCounter.Load()%20000 == 0 && a.commitsCounter.Load() != 0 {
+			fmt.Printf("\n\n\nYou have reached %d commits. Restarting the app to improve perfomance...\n", a.commitsCounter.Load())
+
+			if err := fm.RemoveReposFolder(a.repo); err != nil {
+				log.Fatalln(err)
+			}
+			if err := a.vcs.Clone(ctx, a.repo); err != nil {
+				log.Fatalln(err)
+			}
+		}
+
 		a.m.Unlock()
 	}
 }

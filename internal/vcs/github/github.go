@@ -226,7 +226,7 @@ func (g *githubProvider) Push(ctx context.Context, repo string) error {
 		return fmt.Errorf("%w: %w", vcs.ErrPushFailure, err)
 	}
 	duration := time.Since(start)
-	fmt.Printf("Successfully pushed! It took %s\n", duration)
+	fmt.Printf("Successfully pushed! It took %s\n\n\n\n", duration)
 
 	return nil
 }
