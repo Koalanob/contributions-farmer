@@ -67,6 +67,7 @@ func New(opts ...OptionFn) vcs.VCSProvider {
 func (g *githubProvider) GetFarmerRepos(ctx context.Context, prefix string) ([]string, error) {
 	repos, _, err := g.client.Repositories.List(ctx, g.client.BaseURL.User.Username(), &goGithub.RepositoryListOptions{})
 	if err != nil {
+		log.Println(err)
 		return nil, vcs.ErrGetReposFailure
 	}
 
@@ -128,6 +129,7 @@ func (g *githubProvider) DeleteRepo(ctx context.Context, targetRepo string) erro
 		return err
 	}
 
+	fmt.Println(targetRepo)
 	for _, repo := range repos {
 
 		if repo == targetRepo {
@@ -179,6 +181,7 @@ func (g *githubProvider) Clone(ctx context.Context, repo string) error {
 			URL:      URL,
 			Auth:     g.auth,
 			Progress: os.Stdout,
+			Depth:    1,
 		})
 
 		if err != nil {
@@ -187,13 +190,11 @@ func (g *githubProvider) Clone(ctx context.Context, repo string) error {
 		}
 	}
 
-	// open repository
 	repository, err := git.PlainOpen(path)
 	if err != nil {
 		return err
 	}
 
-	// create worktree
 	worktree, err := repository.Worktree()
 	if err != nil {
 		return err
@@ -218,13 +219,14 @@ func (g *githubProvider) Commit(ctx context.Context, message string, date time.T
 }
 
 func (g *githubProvider) Push(ctx context.Context, repo string) error {
+	start := time.Now()
 	if err := g.repository.Push(&git.PushOptions{
-		RemoteName: "origin",
-		Auth:       g.auth,
-		Force:      true,
+		Auth: g.auth,
 	}); err != nil {
 		return fmt.Errorf("%w: %w", vcs.ErrPushFailure, err)
 	}
+	duration := time.Since(start)
+	fmt.Printf("Successfully pushed! It took %s\n", duration)
 
 	return nil
 }

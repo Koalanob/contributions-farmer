@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/robotiksuperb/contributions-farmer/internal/vcs"
+	"github.com/robotiksuperb/contributions-farmer/pkg/utils/fm"
 )
 
 type Farmer interface {
@@ -74,14 +75,12 @@ func (a *activityFarmer) startWorker(id int, ctx context.Context, wg *sync.WaitG
 		}
 
 		if a.commitsCounter.Load()%1000 == 0 && a.commitsCounter.Load() != 0 {
-			fmt.Printf("\n\n\n You have reached %d commits. I'll try to push it now ~~~\n\n\n", a.commitsCounter.Load())
+			fmt.Printf("\n\n\n You have reached %d commits. Trying to push...\n\n\n", a.commitsCounter.Load())
 			if err := a.vcs.Push(ctx, a.repo); err != nil {
 				log.Fatalln(err)
 			}
-			fmt.Printf("Successfully pushed\n")
 		}
 		a.m.Unlock()
-
 	}
 }
 
@@ -90,6 +89,10 @@ func (a *activityFarmer) seedJobs(ctx context.Context, ch chan int) {
 	for {
 		select {
 		case <-ctx.Done():
+			if err := fm.RemoveReposFolder(a.repo); err != nil {
+				log.Fatalln(err)
+			}
+			fmt.Printf("successfully deleted %s folder\n", a.repo)
 			fmt.Printf("seeder is being closed... \n")
 			return
 		default:
