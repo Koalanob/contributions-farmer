@@ -63,7 +63,7 @@ func New(path string) (*Config, error) {
 	config.ReposPath = viperConfig.ReposPath
 	config.RepositoryPrefix = viperConfig.RepositoryPrefix
 
-	if strings.Contains(viperConfig.TargetRepo, "farmer_") {
+	if strings.Contains(viperConfig.TargetRepo, defaultRepoPrefix) {
 		config.TargetRepo = viperConfig.TargetRepo
 	} else {
 		config.TargetRepo = config.RepositoryPrefix + viperConfig.TargetRepo
