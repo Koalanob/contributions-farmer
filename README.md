@@ -47,3 +47,5 @@ make all-w
 ```bash
 make all-l
 ```
+
+When you have already pushed a lot of commits, your application may work slowly. All you have to do is restart your application by pressing CTRL+C in the terminal, and then the script will remove your cloned repository from the repositories folder. Run farmer again and it will work as fast as possible.
