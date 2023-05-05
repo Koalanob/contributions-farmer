@@ -60,14 +60,14 @@ func (a *activityFarmer) startWorker(id int, ctx context.Context, wg *sync.WaitG
 	for j := range ch {
 		a.commitsCounter.Add(1)
 
+		a.m.Lock()
+
 		currentDay = currentDay.AddDate(0, 0, -1)
 		if currentDay == a.end {
 			currentDay = a.start
 			log.Printf("successfully commited from %s to %s | commits count: %d",
 				a.start, a.end, a.commitsCounter.Load())
 		}
-
-		a.m.Lock()
 
 		if err := a.vcs.Commit(ctx, fmt.Sprintf("feat: my cool feature. %d", j), currentDay); err != nil {
 			log.Fatalln(err)
