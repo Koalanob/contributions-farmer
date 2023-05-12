@@ -1,4 +1,4 @@
-module github.com/robotiksuperb/contributions-farmer
+module github.com/Koalanob/contributions-farmer
 
 go 1.19
 
