@@ -4,8 +4,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/robotiksuperb/contributions-farmer/internal/common"
-	"github.com/robotiksuperb/contributions-farmer/internal/vcs"
+	"github.com/koalacrypt/contributions-farmer/internal/common"
+	"github.com/koalacrypt/contributions-farmer/internal/vcs"
 )
 
 const maxConcurrency = 16

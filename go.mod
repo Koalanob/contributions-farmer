@@ -1,4 +1,4 @@
-module github.com/Koalanob/contributions-farmer
+module github.com/koalacrypt/contributions-farmer
 
 go 1.19
 

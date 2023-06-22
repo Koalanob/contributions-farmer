@@ -8,9 +8,9 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/robotiksuperb/contributions-farmer/internal/config"
-	"github.com/robotiksuperb/contributions-farmer/internal/farmer"
-	"github.com/robotiksuperb/contributions-farmer/internal/vcs/github"
+	"github.com/koalacrypt/contributions-farmer/internal/config"
+	"github.com/koalacrypt/contributions-farmer/internal/farmer"
+	"github.com/koalacrypt/contributions-farmer/internal/vcs/github"
 )
 
 var (

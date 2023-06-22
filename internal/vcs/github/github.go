@@ -12,7 +12,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 
-	"github.com/robotiksuperb/contributions-farmer/internal/vcs"
+	"github.com/koalacrypt/contributions-farmer/internal/vcs"
 
 	goGithub "github.com/google/go-github/github"
 	"golang.org/x/oauth2"

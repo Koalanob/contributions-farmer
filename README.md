@@ -17,7 +17,7 @@ You can deploy this script on Railway or another infrastructure platform, but I 
 **Create your own repository and clone this app**
 
 ```bash
-git clone https://github.com/robotiksuperb/contributions-farmer.git
+git clone https://github.com/koalacrypt/contributions-farmer.git
 ```
 
 **Configure `app.env` file.** </br>

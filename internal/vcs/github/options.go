@@ -1,7 +1,7 @@
 package github
 
 import (
-	"github.com/robotiksuperb/contributions-farmer/internal/common"
+	"github.com/koalacrypt/contributions-farmer/internal/common"
 )
 
 type Config struct {

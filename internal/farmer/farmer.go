@@ -8,8 +8,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/robotiksuperb/contributions-farmer/internal/vcs"
-	"github.com/robotiksuperb/contributions-farmer/pkg/utils/fm"
+	"github.com/koalacrypt/contributions-farmer/internal/vcs"
+	"github.com/koalacrypt/contributions-farmer/pkg/utils/fm"
 )
 
 type Farmer interface {
